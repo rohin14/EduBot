@@ -4,4 +4,5 @@ langchain-groq
 langchain-community
 faiss-cpu
 spacy
+spacy-model-en_core_web_md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.6.0/en_core_web_md-3.6.0.tar.gz
 pypdf
