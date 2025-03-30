@@ -1,32 +1,38 @@
 import streamlit as st
 import os
 import tempfile
+import subprocess
+import sys
 from pathlib import Path
 from langchain_groq import ChatGroq
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
-import spacy
-import os
-
-import spacy
-from spacy.cli import download
-
-def load_spacy_model(model_name):
-    try:
-        return spacy.load(model_name)
-    except OSError:
-        download(model_name)
-        return spacy.load(model_name)
-
-# Load the model safely
-nlp = load_spacy_model("en_core_web_md")
-
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.embeddings import SpacyEmbeddings
 
+# First, ensure spacy model is installed
+def install_spacy_model(model_name):
+    try:
+        import spacy
+        try:
+            # Try to load the model
+            spacy.load(model_name)
+            return True
+        except:
+            # If it fails, install the model
+            with st.spinner(f"Installing Spacy model {model_name}. This may take a moment..."):
+                subprocess.check_call([sys.executable, "-m", "spacy", "download", model_name])
+            return True
+    except Exception as e:
+        st.error(f"Error installing Spacy model: {str(e)}")
+        return False
+
+# Set default Spacy model and ensure it's installed
+default_spacy_model = "en_core_web_md"
+spacy_installed = install_spacy_model(default_spacy_model)
 
 # App title and configuration
 st.set_page_config(page_title="Educational RAG App", page_icon="📚", layout="wide")
@@ -67,12 +73,12 @@ with st.sidebar:
     
     # Add info about Spacy models
     st.header("Embedding Configuration")
-    spacy_model = st.selectbox(
-        "Select Spacy Model:",
-        ["en_core_web_md", "en_core_web_lg"],
-        index=0,
-        help="Medium (md) or Large (lg) Spacy model for embeddings"
-    )
+    if spacy_installed:
+        st.success(f"Spacy model: ✓ {default_spacy_model} (installed)")
+        spacy_model = default_spacy_model
+    else:
+        st.error("Spacy model installation failed. Some features may not work.")
+        spacy_model = default_spacy_model
     
     # Learning style preferences
     st.header("Learning Preferences")
@@ -93,19 +99,6 @@ with st.sidebar:
     include_examples = st.checkbox("Include examples in answers", value=True)
     include_analogies = st.checkbox("Include analogies in answers", value=True)
     include_questions = st.checkbox("Include practice questions", value=True)
-
-# Check if Spacy model is installed, if not show instructions
-def check_spacy_model(model_name):
-    try:
-        import spacy
-        spacy.load(model_name)
-        return True
-    except:
-        return False
-
-if not check_spacy_model(spacy_model):
-    st.warning(f"Spacy model '{spacy_model}' not found. Please install it with:")
-    st.code(f"python -m spacy download {spacy_model}")
 
 # Function to process PDFs and create vectorstore
 def process_pdfs(pdf_files):
@@ -159,14 +152,14 @@ uploaded_pdfs = st.file_uploader("Upload PDF Textbooks", type="pdf", accept_mult
 
 # Process PDFs when user clicks the button
 if uploaded_pdfs and st.button("Process Textbooks"):
-    if check_spacy_model(spacy_model):
+    if spacy_installed:
         vectorstore, filenames = process_pdfs(uploaded_pdfs)
         if vectorstore:
             st.session_state.vectorstore = vectorstore
             st.session_state.uploaded_files.extend([name for name in filenames if name not in st.session_state.uploaded_files])
             st.success("Textbooks processed and ready for questions!")
     else:
-        st.error(f"Please install the required Spacy model first: python -m spacy download {spacy_model}")
+        st.error(f"Spacy model is required but installation failed. Please try reloading the app.")
 
 # Create the RAG chain
 def create_rag_chain():
@@ -317,6 +310,25 @@ if st.button("Reset App"):
     st.session_state.vectorstore = None
     st.session_state.uploaded_files = []
     st.success("App reset successfully. You can upload new textbooks now.")
+
+# Add requirements file creation for Streamlit Cloud
+# This is only needed if running locally and you want to create requirements.txt
+if 'create_requirements_file' not in st.session_state:
+    st.session_state.create_requirements_file = False
+    # Create requirements.txt file for Streamlit Cloud deployment
+    try:
+        with open('requirements.txt', 'w') as f:
+            f.write('''streamlit
+langchain-groq
+langchain
+langchain-community
+faiss-cpu
+spacy
+pypdf
+''')
+        st.session_state.create_requirements_file = True
+    except:
+        pass
 
 # Footer
 st.markdown("---")
