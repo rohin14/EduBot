@@ -6,10 +6,24 @@ from langchain_groq import ChatGroq
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
+import spacy
+import os
+
+# Function to check and download Spacy model
+def install_spacy_model(model_name):
+    try:
+        spacy.load(model_name)
+    except OSError:
+        os.system(f"python -m spacy download {model_name}")
+
+# Example: Install the required Spacy model
+install_spacy_model("en_core_web_md")
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.embeddings import SpacyEmbeddings
+
 
 # App title and configuration
 st.set_page_config(page_title="Educational RAG App", page_icon="📚", layout="wide")
