@@ -9,15 +9,18 @@ from langchain_community.vectorstores import FAISS
 import spacy
 import os
 
-# Function to check and download Spacy model
-def install_spacy_model(model_name):
-    try:
-        spacy.load(model_name)
-    except OSError:
-        os.system(f"python -m spacy download {model_name}")
+import spacy
+from spacy.cli import download
 
-# Example: Install the required Spacy model
-install_spacy_model("en_core_web_md")
+def load_spacy_model(model_name):
+    try:
+        return spacy.load(model_name)
+    except OSError:
+        download(model_name)
+        return spacy.load(model_name)
+
+# Load the model safely
+nlp = load_spacy_model("en_core_web_md")
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
