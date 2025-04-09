@@ -5,3 +5,4 @@ langchain-community
 faiss-cpu
 spacy==3.6.1
 pypdf
+blis
