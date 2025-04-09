@@ -1,18 +1,15 @@
-# Core
 streamlit>=1.26.0
 
-# Langchain ecosystem
 langchain>=0.0.267
 langchain-groq>=0.0.1
 langchain-community>=0.0.10
 langchain-core>=0.1.0
 
-# Vector search
 faiss-cpu>=1.7.4
 
 # NLP stack
 blis==0.7.9
 spacy==3.5.3
 
-# Other utilities
+# PDF handling
 pypdf>=3.15.1
