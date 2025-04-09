@@ -1,8 +1,13 @@
-streamlit
-langchain
-langchain-groq
-langchain-community
-faiss-cpu
-spacy==3.6.1
-pypdf
-blis
+streamlit>=1.26.0
+langchain>=0.0.267
+langchain-groq>=0.0.1
+langchain-community>=0.0.10
+langchain-core>=0.1.0
+faiss-cpu>=1.7.4
+# Pre-install blis with specific version to avoid build issues
+blis==0.7.9
+# Install spacy after blis is properly installed
+spacy>=3.6.0
+# Specify en_core_web_sm model to be installed
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
+pypdf>=3.15.1
