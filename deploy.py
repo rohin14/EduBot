@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.embeddings import SpacyEmbeddings
 import spacy
 
-def install_spacy_model(model_name="en_core_web_sm"):
+'''def install_spacy_model(model_name="en_core_web_sm"):
     """Check if Spacy model is installed, and install if missing."""
     try:
         spacy.load(model_name)
@@ -21,7 +21,7 @@ def install_spacy_model(model_name="en_core_web_sm"):
     except OSError:
         st.warning(f"Installing Spacy model '{model_name}', please wait...")
         subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
-        return model_name
+        return model_name'''
 
 # Ensure Spacy model is installed before proceeding
 spacy_model = install_spacy_model("en_core_web_sm")
