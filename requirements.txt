@@ -1,13 +1,18 @@
+# Core
 streamlit>=1.26.0
+
+# Langchain ecosystem
 langchain>=0.0.267
 langchain-groq>=0.0.1
 langchain-community>=0.0.10
 langchain-core>=0.1.0
-faiss-cpu>=1.7.4
-# Pre-install blis with specific version to avoid build issues
-blis==0.7.9
-# Install spacy after blis is properly installed
-spacy>=3.6.0
-# Specify en_core_web_sm model to be installed
 
+# Vector search
+faiss-cpu>=1.7.4
+
+# NLP stack
+blis==0.7.9
+spacy==3.5.3
+
+# Other utilities
 pypdf>=3.15.1
